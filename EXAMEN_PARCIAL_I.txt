@@ -1,0 +1,73 @@
+; @file Examen Parxial I
+; @brief En este programa le doy la solución al examan parcail I
+; @date 20/11/2022
+; @author Cristhian Baltazar Yarleque Ruiz
+    PROCESSOR 18F57Q84
+#include <xc.inc>
+    
+PSECT resetVect, class=CODE, reloc=2
+resetVect:
+    Goto Parcial
+PSECT CODE
+ 
+Parcial:
+;PARTE b:
+    MOVLW 13 ;13->W (cargamos W en el valor de 13)
+    MOVWF 0x500, a ;(W)->f: 0x500; ESTA SERÁ NUESTRA VARIABLE X
+    
+    MOVLW 7 ;7->W (cargamos W en el valor de 7)
+    MOVWF 0x501, a ;(W)->f: 0x501; ESTA SERÁ NUESTRA VARIABLE Y
+    
+    MOVLW 20 ;20->W (cargamos W en el valor de 20)
+    MOVWF 0x502, a ;(W)->f: 0x502; ESTA SERÁ NUESTRA VARIABLE Z
+    
+;PARTE c:
+    MOVLW 2 ;2->W (cargamos W en el valor de 2)
+    MOVWF 0x500, a ;(W)->f: 0x500; ESTA SERÁ NUESTRA VARIABLE X
+    
+    MOVLW 4 ;4->W (cargamos W en el valor de 4)
+    MOVWF 0x501, a ;(W)->f: 0x501; ESTA SERÁ NUESTRA VARIABLE Y
+    
+;PARTE d:}
+    ;CPFSEQ f,a - STATUS: none
+    ;CPFSGT f,a - STATUS: none
+    CPFSEQ 0x500,a ;Comparamos si x es igual a y
+    goto Mayor
+    goto Fin
+Mayor:
+    CPFSGT 0x500,a ;Comparamos si x es mayor que y
+    goto A2
+    goto A1
+A1: ;x mayor que y
+    RLNCF 0x4E8,w,a ;Primera rotación de y: 2y
+    ADDWF 0x501,f,a ;Sumamos y al acumulador=3y y lo guardamos en f
+    
+    MOVF 0x500,w,a ;(f)->W (llevamos a x al acumulador)
+    RLNCF 0x4E8,w,a ;Primera rotación de x: 2x
+    RLNCF 0x4E8,w,a ;segunda rotación de x: 4x
+    ADDWF 0x500,w,a ;Sumamos x al acumulador=5x y lo guardamos en w
+    
+    ADDWF 0x501,w,a ;Sumamos 5x+3y y lo guardamos en w
+    goto Fin
+   
+    
+A2: ;x menor que y
+    RLNCF 0x4E8,w,a ;Primera rotación de y: 2y
+    RLNCF 0x4E8,w,a ;segunda rotación de y: 4y
+    RLNCF 0x4E8,w,a ;tercera rotación de y: 8y
+    ADDWF 0x501,f,a ;Sumamos y al acumulador=9y y lo guardamos en f
+    
+    MOVF 0x500,w,a ;(f)->W (llevamos a x al acumulador)
+    RLNCF 0x4E8,w,a ;Primera rotación de x: 2x
+    RLNCF 0x4E8,w,a ;segunda rotación de x: 4x
+    RLNCF 0x4E8,w,a ;tercera rotación de x: 8x
+    MOVWF 0x500,a
+    MOVLW 2
+    SUBLW 0x500 ; restamos x para obtener 7x
+    MOVWF 0x500,a
+ 
+    MOVF 0x501,w,a ;(f)->W (llevamos a 9y al acumulador)
+    SUBLW 0x500 ; 7x-9y
+Fin:
+    Nop
+END resetVect
